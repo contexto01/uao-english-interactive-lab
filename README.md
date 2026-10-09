@@ -1,34 +1,46 @@
-## UAO ENGLISH INTERACTIVE LAB
-# Estructura
+## UAO English Interactive Lab
+
+Base inicial para una plataforma de desafíos educativos de Inglés 5 de la Universidad Autónoma de Occidente.
+
+### Estructura actual
 
 ```text
-uao-english-lab/
+uao-english-interactive-lab/
 ├── public/
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx            # reemplaza MainLayout + index.html
-│   │   ├── page.tsx              # "/"
-│   │   ├── not-found.tsx         # 404
+│   │   ├── layout.tsx            # Layout raíz, metadata y estructura global
+│   │   ├── page.tsx              # Página principal
+│   │   ├── not-found.tsx         # Página 404
 │   │   ├── globals.css
 │   │   └── desafios/
 │   │       └── [challengeId]/
-│   │           ├── page.tsx      # "/desafios/:id"
+│   │           ├── page.tsx      # Detalle de un desafío
 │   │           └── resultado/
-│   │               └── page.tsx  # (futuro)
-│   ├── components/
+│   │               └── page.tsx  # Placeholder de resultados
+│   ├── components/               # Componentes reutilizables
 │   │   ├── ui/                   # Button, Badge
 │   │   └── layout/               # Navbar, Footer
-│   ├── features/
-│   │   ├── home/                 # Hero, ChallengesSection
-│   │   ├── challenges/           # (components, data, types.ts)
-│   │   ├── activities/           # (futuro) ActivityHost, EmbeddedActivity
-│   │   └── results/              # (futuro) ResultScreen, ResultCard
-│   ├── hooks/                    # (futuro)
-│   ├── services/                 # (futuro)
-│   └── utils/                    # (futuro)
+│   └── features/                 # Funcionalidades organizadas por dominio
+│       ├── home/                 # Hero, desafíos y cómo funciona
+│       └── challenges/            # Tipos y datos de desafíos
 ├── next.config.ts
-├── .env.example
 └── README.md
 ```
 
-- Se utilizará Tailwind CSS en el proyecto.
+### Tecnologías
+
+- Next.js con App Router
+- TypeScript
+- Tailwind CSS 4
+- React Server Components por defecto
+
+### Comandos
+
+```bash
+npm run dev
+npm run lint
+npm run build
+```
+
+Las actividades, resultados reales e integraciones externas se incorporarán progresivamente.

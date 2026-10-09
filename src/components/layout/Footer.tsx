@@ -1,5 +1,3 @@
-'use client';
-
 export default function Footer() {
   return (
     <footer className="mt-16 border-t border-slate-200 bg-white">
@@ -8,7 +6,7 @@ export default function Footer() {
           <p className="text-base font-bold text-slate-900">Universidad Autónoma de Occidente</p>
           <p className="text-slate-500">PEF · Recursos educativos digitales · Inglés 5 · Cali, Colombia</p>
         </div>
-        <p className="text-xs text-slate-500">© {new Date().getFullYear()} UAO. Proyecto académico.</p>
+        <p className="text-xs text-slate-500">© 2026 UAO. Proyecto académico.</p>
       </div>
     </footer>
   );
