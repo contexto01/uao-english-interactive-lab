@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #fdf2f3;
+  --color-brand-100: #fbe5e7;
+  --color-brand-500: #d1243a;
+  --color-brand-600: #b8102a;
+  --color-brand-700: #9b0b22;
+  --color-brand-800: #7d0a1e;
+  --color-brand-900: #5a0715;
+}
+
+@theme inline {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-slate-50 text-slate-900 antialiased; }
+}
