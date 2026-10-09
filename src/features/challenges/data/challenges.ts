@@ -17,7 +17,12 @@ export const challenges: Challenge[] = [
     id: 'infinitives-gerunds',
     title: 'Infinitives and Gerunds',
     description: 'Identify when to use infinitives and gerunds in everyday sentences.',
-    activity: { kind: 'external', status: 'planned' },
+    activity: {
+      kind: 'embedded',
+      status: 'available',
+      src: 'https://es.educaplay.com/juego/30653017-infinitives_gerunds_challenge.html',
+      title: 'Infinitives and Gerunds Challenge',
+    },
   },
   {
     id: 'connectors-cause-reason-purpose',

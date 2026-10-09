@@ -29,12 +29,14 @@ export default function ChallengesSection() {
                 <span className="text-sm font-extrabold text-brand-700">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <Badge tone="brand">Próximamente</Badge>
+                <Badge tone="brand">
+                  {challenge.activity.status === 'available' ? 'Disponible' : 'Próximamente'}
+                </Badge>
               </div>
               <h3 className="mt-8 text-xl font-extrabold text-slate-900">{challenge.title}</h3>
               <p className="mt-3 flex-1 leading-7 text-slate-600">{challenge.description}</p>
               <ButtonLink href={`/desafios/${challenge.id}`} variant="secondary" className="mt-6 w-full">
-                Ver desafío
+                {challenge.activity.status === 'available' ? 'Abrir desafío' : 'Ver desafío'}
               </ButtonLink>
             </article>
           ))}
