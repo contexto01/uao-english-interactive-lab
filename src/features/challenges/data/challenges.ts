@@ -5,7 +5,7 @@ export const challenges: Challenge[] = [
     id: 'conditionals',
     title: 'Conditionals',
     description: 'Practice expressing real, possible and hypothetical situations.',
-    activity: { kind: 'external', status: 'planned' },
+    activity: { kind: 'internal', status: 'available', gameId: 'conditionals' },
   },
   {
     id: 'relative-clauses',

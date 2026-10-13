@@ -6,6 +6,7 @@ export type Activity =
   | {
       kind: 'internal';
       status: ChallengeStatus;
+      gameId: string;
     }
   | {
       kind: 'embedded';

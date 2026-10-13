@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { challenges, getChallengeById } from '@/features/challenges/data/challenges';
 import EmbeddedActivity from '@/features/activities/EmbeddedActivity';
+import InternalActivity from '@/features/activities/InternalActivity';
 
 // Genera las rutas de los 6 desafíos al compilar (también sirve si luego exportan a estático)
 export function generateStaticParams() {
@@ -28,6 +29,8 @@ export default async function ChallengePage({
       <div className="mt-8">
         {challenge.activity.kind === 'embedded' && challenge.activity.status === 'available' ? (
           <EmbeddedActivity src={challenge.activity.src} title={challenge.activity.title} />
+        ) : challenge.activity.kind === 'internal' && challenge.activity.status === 'available' ? (
+          <InternalActivity gameId={challenge.activity.gameId} />
         ) : (
           <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
             Esta actividad estará disponible próximamente.
