@@ -23,3 +23,34 @@
     @apply bg-slate-50 text-slate-900 antialiased;
   }
 }
+
+@keyframes token-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-6px);
+  }
+
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes score-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.85);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}

@@ -1,12 +1,31 @@
 'use client';
 
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  rectSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { conditionalQuestions, tokenizeSentence } from './data/conditionals';
 
 const STORAGE_KEY = 'uao-english-lab:progress:conditionals';
-const PROGRESS_VERSION = 1;
-const STARTING_LIVES = 5;
+const PROGRESS_VERSION = 3;
+const MISTAKE_PENALTY = 5;
+const CORRECT_REWARD = 10;
 
 type Token = {
   id: string;
@@ -17,10 +36,10 @@ type Token = {
 type GameProgress = {
   version: number;
   currentQuestion: number;
-  selectedIds: string[];
-  shuffledTokenIds: string[][];
+  questionOrder: number[];
+  tokenOrder: string[][];
+  lockedTokenIds: string[][];
   score: number;
-  lives: number;
   elapsedSeconds: number;
   questionSeconds: number;
   questionMistakes: number;
@@ -28,12 +47,14 @@ type GameProgress = {
   correctAnswers: number;
   completed: boolean;
   bestScore: number;
+  combo: number;
 };
 
 type Feedback = {
   kind: 'correct' | 'wrong' | 'complete';
-  message: string;
   tokenId?: string;
+  points?: number;
+  combo?: number;
 };
 
 function shuffle<T>(items: T[]) {
@@ -47,6 +68,17 @@ function shuffle<T>(items: T[]) {
   return result;
 }
 
+function shuffleTokens(ids: string[]) {
+  const result = shuffle(ids);
+
+  // Make sure the first word is not already in the correct position.
+  if (result.length > 1 && result[0] === ids[0]) {
+    [result[0], result[1]] = [result[1], result[0]];
+  }
+
+  return result;
+}
+
 function formatTime(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
   const seconds = (totalSeconds % 60).toString().padStart(2, '0');
@@ -54,16 +86,18 @@ function formatTime(totalSeconds: number) {
 }
 
 function createProgress(tokenSets: Token[][], bestScore = 0, randomize = true): GameProgress {
+  const questionIndexes = tokenSets.map((_, index) => index);
+
   return {
     version: PROGRESS_VERSION,
     currentQuestion: 0,
-    selectedIds: [],
-    shuffledTokenIds: tokenSets.map((tokens) => {
+    questionOrder: randomize ? shuffle(questionIndexes) : questionIndexes,
+    tokenOrder: tokenSets.map((tokens) => {
       const ids = tokens.map((token) => token.id);
-      return randomize ? shuffle(ids) : ids;
+      return randomize ? shuffleTokens(ids) : ids.length > 1 ? [ids[1], ids[0], ...ids.slice(2)] : ids;
     }),
+    lockedTokenIds: tokenSets.map(() => []),
     score: 0,
-    lives: STARTING_LIVES,
     elapsedSeconds: 0,
     questionSeconds: 0,
     questionMistakes: 0,
@@ -71,6 +105,7 @@ function createProgress(tokenSets: Token[][], bestScore = 0, randomize = true): 
     correctAnswers: 0,
     completed: false,
     bestScore,
+    combo: 0,
   };
 }
 
@@ -83,18 +118,68 @@ function isValidProgress(value: unknown): value is GameProgress {
     typeof progress.currentQuestion === 'number' &&
     progress.currentQuestion >= 0 &&
     progress.currentQuestion < conditionalQuestions.length &&
-    Array.isArray(progress.selectedIds) &&
-    Array.isArray(progress.shuffledTokenIds) &&
-    progress.shuffledTokenIds.length === conditionalQuestions.length &&
+    Array.isArray(progress.questionOrder) &&
+    progress.questionOrder.length === conditionalQuestions.length &&
+    progress.questionOrder.every((index) => typeof index === 'number' && index >= 0 && index < conditionalQuestions.length) &&
+    Array.isArray(progress.tokenOrder) &&
+    progress.tokenOrder.length === conditionalQuestions.length &&
+    progress.tokenOrder.every((tokens) => Array.isArray(tokens)) &&
+    Array.isArray(progress.lockedTokenIds) &&
+    progress.lockedTokenIds.length === conditionalQuestions.length &&
+    progress.lockedTokenIds.every((tokens) => Array.isArray(tokens)) &&
     typeof progress.score === 'number' &&
-    typeof progress.lives === 'number' &&
     typeof progress.elapsedSeconds === 'number' &&
     typeof progress.questionSeconds === 'number' &&
     typeof progress.questionMistakes === 'number' &&
     typeof progress.totalMistakes === 'number' &&
     typeof progress.correctAnswers === 'number' &&
     typeof progress.completed === 'boolean' &&
-    typeof progress.bestScore === 'number'
+    typeof progress.bestScore === 'number' &&
+    typeof progress.combo === 'number'
+  );
+}
+
+type SortableTokenProps = {
+  token: Token;
+  isCorrect: boolean;
+  isWrong: boolean;
+  disabled: boolean;
+};
+
+function SortableToken({ token, isCorrect, isWrong, disabled }: SortableTokenProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: token.id,
+    disabled,
+  });
+
+  const stateClass = isCorrect
+    ? 'border-emerald-400 bg-emerald-100 text-emerald-800'
+    : isWrong
+      ? 'border-red-400 bg-red-50 text-red-700'
+      : token.punctuation
+        ? 'border-transparent bg-transparent px-1 text-slate-700 shadow-none'
+        : 'border-slate-200 bg-white text-slate-800';
+
+  return (
+    <button
+      ref={setNodeRef}
+      type="button"
+      disabled={disabled}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        touchAction: 'none',
+        zIndex: isDragging ? 10 : undefined,
+      }}
+      {...attributes}
+      {...listeners}
+      className={`rounded-xl border-2 px-4 py-3 text-base font-extrabold shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-not-allowed sm:text-lg ${stateClass} ${
+        isDragging ? 'opacity-30' : isWrong ? 'animate-[token-shake_420ms_ease-in-out]' : 'hover:border-red-400 hover:bg-red-50'
+      }`}
+      aria-label={`Palabra ${token.text}. Arrastra para reordenar.`}
+    >
+      {token.text}
+    </button>
   );
 }
 
@@ -114,21 +199,23 @@ export default function ConditionalsGame() {
   const [progress, setProgress] = useState<GameProgress>(() => createProgress(tokenSets, 0, false));
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [lastAward, setLastAward] = useState<number | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
-  const question = conditionalQuestions[progress.currentQuestion];
-  const tokens = tokenSets[progress.currentQuestion] ?? [];
+  const questionIndex = progress.questionOrder[progress.currentQuestion] ?? 0;
+  const question = conditionalQuestions[questionIndex] ?? conditionalQuestions[0];
+  const tokens = tokenSets[questionIndex] ?? [];
   const tokenMap = new Map(tokens.map((token) => [token.id, token]));
-  const answerTokens = progress.selectedIds
+  const currentTokenOrder = progress.tokenOrder[questionIndex] ?? [];
+  const orderedTokens = currentTokenOrder
     .map((id) => tokenMap.get(id))
     .filter((token): token is Token => Boolean(token));
-  const bankTokens = (progress.shuffledTokenIds[progress.currentQuestion] ?? [])
-    .map((id) => tokenMap.get(id))
-    .filter((token): token is Token => {
-      if (!token) return false;
-      return !progress.selectedIds.includes(token.id);
-    });
+  const expectedIds = tokens.map((token) => token.id);
+  const lockedTokenIds = progress.lockedTokenIds[questionIndex] ?? [];
+  const activeToken = activeId ? tokenMap.get(activeId) : undefined;
   const currentQuestionComplete = feedback?.kind === 'complete';
 
   useEffect(() => {
@@ -163,7 +250,7 @@ export default function ConditionalsGame() {
   }, [isHydrated, progress]);
 
   useEffect(() => {
-    if (!isHydrated || progress.completed || gameOver || currentQuestionComplete) return;
+    if (!isHydrated || progress.completed || currentQuestionComplete) return;
 
     const timer = window.setInterval(() => {
       setProgress((current) => ({
@@ -174,66 +261,77 @@ export default function ConditionalsGame() {
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [currentQuestionComplete, gameOver, isHydrated, progress.completed]);
+  }, [currentQuestionComplete, isHydrated, progress.completed]);
 
-  useEffect(() => {
-    if (!feedback || feedback.kind === 'complete') return;
+  function handleDragStart({ active }: DragStartEvent) {
+    if (!isHydrated || progress.completed || currentQuestionComplete) return;
+    setActiveId(String(active.id));
+    setFeedback(null);
+  }
 
-    const timeout = window.setTimeout(() => setFeedback(null), 650);
-    return () => window.clearTimeout(timeout);
-  }, [feedback]);
+  function handleDragEnd({ active, over }: DragEndEvent) {
+    setActiveId(null);
+    if (!isHydrated || progress.completed || currentQuestionComplete || !over) return;
 
-  function handleTokenClick(token: Token) {
-    if (!isHydrated || progress.completed || gameOver || currentQuestionComplete) return;
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    const oldIndex = currentTokenOrder.indexOf(activeId);
+    const newIndex = currentTokenOrder.indexOf(overId);
 
-    const expectedToken = tokens[progress.selectedIds.length];
+    if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return;
+    if (lockedTokenIds.includes(activeId) || lockedTokenIds.includes(overId)) return;
 
-    if (token.id === expectedToken?.id) {
-      const selectedIds = [...progress.selectedIds, token.id];
-      const isLastToken = selectedIds.length === tokens.length;
+    const nextTokenOrder = [...currentTokenOrder];
+    [nextTokenOrder[oldIndex], nextTokenOrder[newIndex]] = [nextTokenOrder[newIndex], nextTokenOrder[oldIndex]];
+    const nextLockedTokenIds = expectedIds.filter(
+      (id, index) => id === nextTokenOrder[index] || lockedTokenIds.includes(id),
+    );
+    const newlyLockedCount = nextLockedTokenIds.filter((id) => !lockedTokenIds.includes(id)).length;
+    const isQuestionComplete = nextLockedTokenIds.length === expectedIds.length;
 
-      if (!isLastToken) {
-        setProgress((current) => ({ ...current, selectedIds }));
-        setFeedback({ kind: 'correct', message: '¡Bien! Continúa con la siguiente palabra.' });
-        return;
-      }
-
-      const points = Math.max(25, 150 - progress.questionSeconds * 2 - progress.questionMistakes * 10);
+    if (newlyLockedCount > 0) {
       const isLastQuestion = progress.currentQuestion === conditionalQuestions.length - 1;
+      const points = CORRECT_REWARD * newlyLockedCount;
+      const nextCombo = progress.combo + newlyLockedCount;
 
       setProgress((current) => {
         const nextScore = current.score + points;
         return {
           ...current,
-          selectedIds,
+          tokenOrder: current.tokenOrder.map((order, index) => (index === questionIndex ? nextTokenOrder : order)),
+          lockedTokenIds: current.lockedTokenIds.map((ids, index) => (index === questionIndex ? nextLockedTokenIds : ids)),
           score: nextScore,
-          correctAnswers: current.correctAnswers + 1,
-          completed: isLastQuestion,
-          bestScore: isLastQuestion ? Math.max(current.bestScore, nextScore) : current.bestScore,
+          combo: nextCombo,
+          correctAnswers: isQuestionComplete ? current.correctAnswers + 1 : current.correctAnswers,
+          completed: isQuestionComplete && isLastQuestion,
+          bestScore: isQuestionComplete && isLastQuestion ? Math.max(current.bestScore, nextScore) : current.bestScore,
         };
       });
-      setLastAward(points);
       setFeedback({
-        kind: 'complete',
-        message: isLastQuestion ? '¡Desafío completado!' : '¡Oración correcta!',
+        kind: isQuestionComplete ? 'complete' : 'correct',
+        points,
+        combo: nextCombo,
       });
       return;
     }
 
-    const remainingLives = progress.lives - 1;
     setProgress((current) => ({
       ...current,
-      lives: Math.max(0, remainingLives),
+      tokenOrder: current.tokenOrder.map((order, index) => (index === questionIndex ? nextTokenOrder : order)),
+      score: Math.max(0, current.score - (current.score > 0 ? MISTAKE_PENALTY : 0)),
       questionMistakes: current.questionMistakes + 1,
       totalMistakes: current.totalMistakes + 1,
+      combo: 0,
     }));
     setFeedback({
       kind: 'wrong',
-      message: remainingLives > 0 ? 'Todavía no. Busca la palabra que continúa la oración.' : 'Se agotaron tus vidas.',
-      tokenId: token.id,
+      tokenId: activeId,
+      points: progress.score > 0 ? -MISTAKE_PENALTY : undefined,
     });
+  }
 
-    if (remainingLives <= 0) setGameOver(true);
+  function handleDragCancel() {
+    setActiveId(null);
   }
 
   function continueToNextQuestion() {
@@ -242,19 +340,17 @@ export default function ConditionalsGame() {
     setProgress((current) => ({
       ...current,
       currentQuestion: current.currentQuestion + 1,
-      selectedIds: [],
       questionSeconds: 0,
       questionMistakes: 0,
+      combo: 0,
     }));
     setFeedback(null);
-    setLastAward(null);
   }
 
   function restartChallenge() {
     setProgress(createProgress(tokenSets, progress.bestScore));
     setFeedback(null);
-    setGameOver(false);
-    setLastAward(null);
+    setActiveId(null);
   }
 
   const completedCount = progress.completed ? conditionalQuestions.length : progress.currentQuestion;
@@ -277,11 +373,9 @@ export default function ConditionalsGame() {
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-sky-700 via-cyan-600 to-sky-600 px-5 py-4 text-white sm:px-8">
+      <div className="bg-gradient-to-r from-red-700 via-rose-600 to-red-600 px-5 py-4 text-white sm:px-8">
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm font-extrabold uppercase tracking-wide">
-          <span>
-            Vidas <span className="ml-2 text-lg tracking-normal text-pink-200">{'♥'.repeat(progress.lives)}{'♡'.repeat(STARTING_LIVES - progress.lives)}</span>
-          </span>
+          <span>Errores: {progress.totalMistakes}</span>
           <span className="rounded-full bg-white/15 px-4 py-2 normal-case tracking-normal">Conditionals Challenge</span>
           <span>Puntos: {progress.score} pts</span>
         </div>
@@ -304,59 +398,55 @@ export default function ConditionalsGame() {
         <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-100 sm:p-8">
           <div className="mb-6 text-center">
             <p className="text-sm font-bold text-brand-700">Ordena las palabras</p>
-            <p className="mt-2 text-slate-500">Selecciona la palabra que debe continuar la oración.</p>
+            <p className="mt-2 text-slate-500">Arrastra las palabras para construir correctamente la oración.</p>
           </div>
 
-          <div className="flex min-h-32 flex-wrap items-center justify-center gap-2 rounded-2xl bg-slate-50 p-5 ring-1 ring-inset ring-slate-100" aria-live="polite">
-            {answerTokens.map((token) => (
-              <span
-                key={token.id}
-                className={`rounded-xl px-3 py-2 text-base font-extrabold shadow-sm sm:text-lg ${
-                  token.punctuation ? 'bg-transparent px-1 text-slate-700 shadow-none' : 'bg-emerald-100 text-emerald-800'
-                }`}
-              >
-                {token.text}
-              </span>
-            ))}
-            {!answerTokens.length && <span className="text-sm font-semibold text-slate-400">Tu oración aparecerá aquí</span>}
-            {answerTokens.length > 0 && !currentQuestionComplete && (
-              <span className="rounded-xl border-2 border-dashed border-slate-200 px-4 py-2 text-sm font-bold text-slate-300">?</span>
-            )}
-          </div>
-
-          <div className="mt-7 flex flex-wrap justify-center gap-3" aria-label="Palabras disponibles">
-            {bankTokens.map((token) => {
-              const isWrong = feedback?.kind === 'wrong' && feedback.tokenId === token.id;
-              return (
-                <button
-                  key={token.id}
-                  type="button"
-                  onClick={() => handleTokenClick(token)}
-                  disabled={currentQuestionComplete || gameOver}
-                  className={`rounded-xl border-2 px-4 py-3 text-base font-extrabold shadow-sm transition hover:-translate-y-0.5 hover:border-sky-400 hover:bg-sky-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-not-allowed sm:text-lg ${
-                    isWrong ? 'border-red-400 bg-red-50 text-red-700' : 'border-slate-200 bg-white text-slate-800'
-                  }`}
-                >
-                  {token.text}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-7 min-h-20 rounded-2xl bg-slate-50 p-4 text-center" aria-live="assertive">
-            {feedback ? (
-              <div className={feedback.kind === 'wrong' ? 'text-red-700' : 'text-emerald-700'}>
-                <p className="font-extrabold">{feedback.message}</p>
-                {feedback.kind === 'complete' && (
-                  <p className="mt-2 text-sm font-semibold text-slate-600">
-                    {question.rule} · +{lastAward} puntos
-                  </p>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
+            <SortableContext items={currentTokenOrder} strategy={rectSortingStrategy}>
+              <div className="mb-4 flex h-12 items-center justify-center" aria-live="assertive">
+                {feedback && feedback.points !== undefined && (
+                  <div
+                    className={`rounded-full px-5 py-2 text-lg font-black shadow-sm ${
+                      feedback.kind === 'wrong'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-emerald-100 text-emerald-700'
+                    } animate-[score-pop_420ms_ease-out]`}
+                  >
+                    {feedback.points !== undefined && (feedback.points > 0 ? `+${feedback.points}` : feedback.points)}
+                    {feedback.combo && feedback.combo > 1 ? ` · Combo x${feedback.combo}` : ''}
+                  </div>
                 )}
               </div>
-            ) : (
-              <p className="text-sm font-semibold text-slate-500">Cada respuesta correcta suma puntos según tu rapidez.</p>
-            )}
-          </div>
+              <div
+                className="flex min-h-32 flex-wrap items-center justify-center gap-2 rounded-2xl bg-slate-50 p-5 ring-1 ring-inset ring-slate-100"
+                aria-label="Palabras para ordenar"
+                aria-live="polite"
+              >
+                {orderedTokens.map((token) => (
+                  <SortableToken
+                    key={token.id}
+                    token={token}
+                    isCorrect={lockedTokenIds.includes(token.id)}
+                    isWrong={feedback?.kind === 'wrong' && feedback.tokenId === token.id}
+                    disabled={lockedTokenIds.includes(token.id) || currentQuestionComplete || progress.completed}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+            <DragOverlay dropAnimation={null}>
+              {activeToken ? (
+                <div className="rounded-xl border-2 border-red-400 bg-white px-4 py-3 text-base font-extrabold text-slate-800 shadow-xl sm:text-lg">
+                  {activeToken.text}
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
 
           {currentQuestionComplete && !progress.completed && (
             <div className="mt-5 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
@@ -381,22 +471,14 @@ export default function ConditionalsGame() {
         </button>
       </div>
 
-      {(progress.completed || gameOver) && (
+      {progress.completed && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/60 p-5 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-3xl bg-white p-6 text-center shadow-2xl sm:p-8">
-            <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl ${progress.completed ? 'bg-emerald-100' : 'bg-red-100'}`}>
-              {progress.completed ? '★' : '♡'}
-            </div>
-            <p className="mt-5 text-sm font-extrabold uppercase tracking-[0.18em] text-brand-700">
-              {progress.completed ? 'Módulo superado' : 'Fin de la partida'}
-            </p>
-            <h3 className="mt-3 text-3xl font-extrabold text-slate-900">
-              {progress.completed ? '¡Actividad completada!' : 'Se agotaron tus vidas'}
-            </h3>
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl">★</div>
+            <p className="mt-5 text-sm font-extrabold uppercase tracking-[0.18em] text-brand-700">Módulo superado</p>
+            <h3 className="mt-3 text-3xl font-extrabold text-slate-900">¡Actividad completada!</h3>
             <p className="mt-3 leading-7 text-slate-600">
-              {progress.completed
-                ? 'Has organizado correctamente todas las oraciones de Conditionals.'
-                : 'Puedes intentarlo nuevamente para mejorar tu puntaje y completar el desafío.'}
+              Has organizado correctamente todas las oraciones de Conditionals.
             </p>
 
             <div className="mt-6 grid grid-cols-2 gap-3 text-left">
@@ -410,11 +492,9 @@ export default function ConditionalsGame() {
               </div>
             </div>
 
-            {progress.completed && (
-              <p className="mt-4 text-sm font-bold text-slate-500">
-                {progress.correctAnswers} de {conditionalQuestions.length} oraciones correctas · Mejor puntaje: {progress.bestScore} pts
-              </p>
-            )}
+            <p className="mt-4 text-sm font-bold text-slate-500">
+              {progress.correctAnswers} de {conditionalQuestions.length} oraciones correctas · Mejor puntaje: {progress.bestScore} pts
+            </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <button

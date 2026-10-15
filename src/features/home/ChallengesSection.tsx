@@ -35,9 +35,11 @@ export default function ChallengesSection() {
               </div>
               <h3 className="mt-8 text-xl font-extrabold text-slate-900">{challenge.title}</h3>
               <p className="mt-3 flex-1 leading-7 text-slate-600">{challenge.description}</p>
-              <ButtonLink href={`/desafios/${challenge.id}`} variant="secondary" className="mt-6 w-full">
-                {challenge.activity.status === 'available' ? 'Abrir desafío' : 'Ver desafío'}
-              </ButtonLink>
+              {challenge.activity.status === 'available' && (
+                <ButtonLink href={`/desafios/${challenge.id}`} variant="secondary" className="mt-6 w-full">
+                  Abrir desafío
+                </ButtonLink>
+              )}
             </article>
           ))}
         </div>
