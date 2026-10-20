@@ -11,18 +11,13 @@ export const challenges: Challenge[] = [
     id: 'relative-clauses',
     title: 'Relative Clauses',
     description: 'Connect ideas and describe people, places and things with precision.',
-    activity: { kind: 'external', status: 'planned' },
+    activity: { kind: 'internal', status: 'available', gameId: 'relative-clauses' },
   },
   {
     id: 'infinitives-gerunds',
     title: 'Infinitives and Gerunds',
     description: 'Identify when to use infinitives and gerunds in everyday sentences.',
-    activity: {
-      kind: 'embedded',
-      status: 'planned',
-      src: 'https://es.educaplay.com/juego/30653017-infinitives_gerunds_challenge.html',
-      title: 'Infinitives and Gerunds Challenge',
-    },
+    activity: { kind: 'internal', status: 'available', gameId: 'infinitives-gerunds' },
   },
   {
     id: 'connectors-cause-reason-purpose',
