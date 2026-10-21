@@ -23,19 +23,19 @@ export const challenges: Challenge[] = [
     id: 'connectors-cause-reason-purpose',
     title: 'Cause, Reason and Purpose',
     description: 'Use connectors to explain why something happens and what it is for.',
-    activity: { kind: 'external', status: 'planned' },
+    activity: { kind: 'internal', status: 'available', gameId: 'connectors-cause-reason-purpose' },
   },
   {
     id: 'question-tags',
     title: 'Question Tags',
     description: 'Build short confirmation questions with the correct auxiliary verbs.',
-    activity: { kind: 'external', status: 'planned' },
+    activity: { kind: 'internal', status: 'available', gameId: 'question-tags' },
   },
   {
     id: 'determiners',
     title: 'Determiners',
     description: 'Strengthen your use of articles, quantifiers and other determiners.',
-    activity: { kind: 'external', status: 'planned' },
+    activity: { kind: 'internal', status: 'available', gameId: 'determiners' },
   },
 ];
 
