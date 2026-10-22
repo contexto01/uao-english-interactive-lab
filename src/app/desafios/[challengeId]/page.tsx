@@ -1,11 +1,10 @@
 import { Suspense } from 'react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { challenges, getChallengeById } from '@/features/challenges/data/challenges';
 import EmbeddedActivity from '@/features/activities/EmbeddedActivity';
 import InternalActivity from '@/features/activities/InternalActivity';
 
-// Genera las rutas de los 6 desafíos al compilar (también sirve si luego exportan a estático)
+// Generate routes for the six challenges at build time (also supports static export).
 export function generateStaticParams() {
   return challenges.map((c) => ({ challengeId: c.id }));
 }
@@ -31,7 +30,7 @@ async function ChallengeContent({
           <InternalActivity gameId={challenge.activity.gameId} />
         ) : (
           <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-            Esta actividad estará disponible próximamente.
+             This activity will be available soon.
           </div>
         )}
       </div>
@@ -56,13 +55,9 @@ export default function ChallengePage({
 }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <Link href="/" className="text-sm font-semibold text-brand-700 hover:underline">
-        ← Volver a los desafíos
-      </Link>
       <Suspense fallback={<ChallengeSkeleton />}>
         <ChallengeContent params={params} />
       </Suspense>
     </div>
   );
 }
-

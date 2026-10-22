@@ -7,7 +7,6 @@ import {
   InfinitiveGerundQuestion,
 } from './data/infinitivesGerunds';
 
-const STORAGE_KEY = 'uao-english-lab:progress:infinitives-gerunds';
 const CORRECT_POINTS = 10;
 const MISTAKE_PENALTY = 5;
 
@@ -409,7 +408,7 @@ function FrogCharacter({
 }
 
 /**
- * Beautiful Lily Pad component (Hoja de lirio) with authentic slit notch & veining
+ * Beautiful Lily Pad component with authentic slit notch & veining
  */
 function LilyPad({
   optionLetter,
@@ -439,7 +438,7 @@ function LilyPad({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={`Opción ${optionLetter}: ${text}`}
+       aria-label={`Option ${optionLetter}: ${text}`}
       className={`group relative flex flex-col items-center justify-start text-center transition-all duration-300 focus:outline-hidden disabled:cursor-not-allowed ${
         disabled && !isSelected ? 'opacity-85' : 'hover:-translate-y-1'
       }`}
@@ -571,12 +570,12 @@ function LilyPad({
         <p className="leading-snug">{text}</p>
         {showAsRightAnswer && (
           <span className="mt-1.5 inline-block text-[11px] font-black uppercase tracking-wider text-emerald-300">
-            ✓ Correcta
+             ✓ Correct
           </span>
         )}
         {isTargetSunk && (
           <span className="mt-1.5 inline-block text-[11px] font-black uppercase tracking-wider text-rose-300">
-            ✗ Se hundió
+             ✗ Sunk
           </span>
         )}
       </div>
@@ -621,22 +620,9 @@ export default function InfinitivesandGerundsGame() {
     setSecondsElapsed(0);
   }, []);
 
-  // Hydration: load best score from localStorage
+  // Start with a clean session; progress is not persisted during testing.
   useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (typeof parsed.bestScore === 'number') {
-            setBestScore(parsed.bestScore);
-          }
-        }
-      } catch {
-        // LocalStorage error fallback
-      }
-    }, 0);
-    return () => clearTimeout(timer);
+    setBestScore(0);
   }, []);
 
   // Audio toggle sync
@@ -655,15 +641,10 @@ export default function InfinitivesandGerundsGame() {
 
   const currentQ = questions[currentIndex];
 
-  // Save best score to localStorage
+  // Track the best score for the current session
   const updateBestScore = useCallback((newScore: number) => {
     setBestScore((prev) => {
       const highest = Math.max(prev, newScore);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ bestScore: highest }));
-      } catch {
-        // Ignore
-      }
       return highest;
     });
   }, []);
@@ -771,7 +752,7 @@ export default function InfinitivesandGerundsGame() {
     return (
       <div className="flex min-h-[400px] items-center justify-center rounded-[2rem] border border-slate-200 bg-white p-12 text-center">
         <p className="text-lg font-bold text-slate-600 animate-pulse">
-          Cargando estanque de Infinitivos y Gerundios... 🐸
+           Loading the Infinitives and Gerunds pond... 🐸
         </p>
       </div>
     );
@@ -792,35 +773,35 @@ export default function InfinitivesandGerundsGame() {
           </div>
 
           <p className="mt-4 text-xs font-black uppercase tracking-[0.25em] text-emerald-400">
-            ¡Misión completada!
+             Mission complete!
           </p>
           <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl text-emerald-100">
             Infinitives & Gerunds Master
           </h2>
           <p className="mt-2 text-sm text-emerald-300/80">
-            ¡La rana cruzó el estanque superando todas las preguntas de gramática!
+             The frog crossed the pond and mastered every grammar question!
           </p>
 
           {/* Score Stats Grid */}
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-5">
             <div className="rounded-2xl border border-emerald-800/40 bg-emerald-900/30 p-4 backdrop-blur-md">
-              <span className="text-xs uppercase text-emerald-300/80 font-bold">Puntaje</span>
+               <span className="text-xs uppercase text-emerald-300/80 font-bold">Score</span>
               <p className="mt-1 text-3xl font-black text-amber-300">{score} pts</p>
             </div>
             <div className="rounded-2xl border border-emerald-800/40 bg-emerald-900/30 p-4 backdrop-blur-md">
-              <span className="text-xs uppercase text-emerald-300/80 font-bold">Récord</span>
+               <span className="text-xs uppercase text-emerald-300/80 font-bold">Best</span>
               <p className="mt-1 text-3xl font-black text-emerald-300">{bestScore} pts</p>
             </div>
             <div className="rounded-2xl border border-emerald-800/40 bg-emerald-900/30 p-4 backdrop-blur-md">
-              <span className="text-xs uppercase text-emerald-300/80 font-bold">Precisión</span>
+               <span className="text-xs uppercase text-emerald-300/80 font-bold">Accuracy</span>
               <p className="mt-1 text-3xl font-black text-emerald-300">{accuracy}%</p>
             </div>
             <div className="rounded-2xl border border-emerald-800/40 bg-emerald-900/30 p-4 backdrop-blur-md">
-              <span className="text-xs uppercase text-emerald-300/80 font-bold">Hundimientos</span>
+               <span className="text-xs uppercase text-emerald-300/80 font-bold">Sinks</span>
               <p className="mt-1 text-3xl font-black text-rose-400">{mistakes}</p>
             </div>
             <div className="rounded-2xl border border-emerald-800/40 bg-emerald-900/30 p-4 backdrop-blur-md">
-              <span className="text-xs uppercase text-emerald-300/80 font-bold">Tiempo</span>
+               <span className="text-xs uppercase text-emerald-300/80 font-bold">Time</span>
               <p className="mt-1 text-3xl font-black text-cyan-300">{formatTimer(secondsElapsed)}</p>
             </div>
           </div>
@@ -828,20 +809,20 @@ export default function InfinitivesandGerundsGame() {
           {/* Feedback summary badge */}
           <div className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/60 p-5 text-left text-sm text-emerald-100 backdrop-blur-md">
             <h4 className="font-extrabold text-emerald-300 flex items-center gap-2">
-              <span>🌿</span> Resumen de Reglas Gramaticales Clave:
+               <span>🌿</span> Key Grammar Rules Summary:
             </h4>
             <ul className="mt-2 space-y-1.5 text-xs sm:text-sm text-emerald-200/90 list-disc list-inside">
               <li>
-                <strong>Verbos de agrado (enjoy, like):</strong> se usan con gerundio (-ing).
+                 <strong>Verbs of liking (enjoy, like):</strong> use a gerund (-ing).
               </li>
               <li>
-                <strong>Verbos de decisión / compromiso (decide, promise):</strong> se usan con infinitivo (to + verbo).
+                 <strong>Decision / commitment verbs (decide, promise):</strong> use an infinitive (to + verb).
               </li>
               <li>
-                <strong>Preposiciones (good at, interested in):</strong> siempre van seguidas de gerundio (-ing).
+                 <strong>Prepositions (good at, interested in):</strong> are always followed by a gerund (-ing).
               </li>
               <li>
-                <strong>Stop to do vs. Stop doing:</strong> <em>stop to check</em> (pausar para hacer algo) vs. <em>stop smoking</em> (abandonar el hábito).
+                 <strong>Stop to do vs. Stop doing:</strong> <em>stop to check</em> (pause to do something) vs. <em>stop smoking</em> (quit the habit).
               </li>
               <li>
                 <strong>Remember to do:</strong> recordar hacer una tarea pendiente o futura.
@@ -856,13 +837,13 @@ export default function InfinitivesandGerundsGame() {
               onClick={initGame}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-8 py-3.5 text-base font-extrabold text-emerald-950 shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-400 hover:scale-105 active:scale-95 cursor-pointer"
             >
-              <span>🔄</span> Jugar de nuevo (Preguntas aleatorias)
+               <span>🔄</span> Play again (Random questions)
             </button>
             <Link
-              href="/#desafios"
+              href="/#challenges"
               className="w-full sm:w-auto inline-flex items-center justify-center rounded-full border border-emerald-700/50 bg-emerald-950/40 px-6 py-3.5 text-base font-bold text-emerald-200 transition hover:bg-emerald-900/60"
             >
-              ← Volver al tablero
+               ← Back to the board
             </Link>
           </div>
         </div>
@@ -880,10 +861,10 @@ export default function InfinitivesandGerundsGame() {
               <span className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-black uppercase tracking-wider text-emerald-800">
                 Pond Challenge 🐸
               </span>
-              <span className="text-xs font-bold text-slate-400">• Preguntas aleatorias</span>
+               <span className="text-xs font-bold text-slate-400">• Random questions</span>
             </div>
             <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-              Infinitives & Gerunds: Salto de la Rana
+               Infinitives & Gerunds: Frog Jump
             </h2>
           </div>
 
@@ -892,23 +873,23 @@ export default function InfinitivesandGerundsGame() {
               type="button"
               onClick={() => setIsSoundMuted((m) => !m)}
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
-              title={isSoundMuted ? 'Activar sonido' : 'Silenciar sonido'}
+               title={isSoundMuted ? 'Turn sound on' : 'Mute sound'}
             >
               <span>{isSoundMuted ? '🔇' : '🔊'}</span>
-              <span>{isSoundMuted ? 'Mudo' : 'Sonido'}</span>
+               <span>{isSoundMuted ? 'Muted' : 'Sound'}</span>
             </button>
 
             <button
               type="button"
               onClick={initGame}
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
-              title="Reiniciar y reordenar preguntas"
+               title="Restart and shuffle questions"
             >
-              <span>🔄</span> Reiniciar
+               <span>🔄</span> Restart
             </button>
 
             <div className="rounded-full bg-emerald-50 px-4 py-1.5 text-xs sm:text-sm font-extrabold text-emerald-800 ring-1 ring-emerald-200">
-              Puntos: <span className="text-base sm:text-lg text-emerald-600">{score}</span> pts
+               Points: <span className="text-base sm:text-lg text-emerald-600">{score}</span> pts
             </div>
           </div>
         </div>
@@ -919,10 +900,10 @@ export default function InfinitivesandGerundsGame() {
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-extrabold uppercase tracking-wide">
           <div className="flex items-center gap-4">
             <span>
-              Pregunta {currentIndex + 1} de {questions.length}
+               Question {currentIndex + 1} of {questions.length}
             </span>
             <span className="text-emerald-300">|</span>
-            <span>Hundimientos: {mistakes}</span>
+             <span>Sinks: {mistakes}</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -932,7 +913,7 @@ export default function InfinitivesandGerundsGame() {
               </span>
             )}
             <span className="font-mono text-cyan-200">⏱ {formatTimer(secondsElapsed)}</span>
-            {bestScore > 0 && <span className="hidden sm:inline">Récord: {bestScore} pts</span>}
+             {bestScore > 0 && <span className="hidden sm:inline">Best: {bestScore} pts</span>}
           </div>
         </div>
 
@@ -988,7 +969,7 @@ export default function InfinitivesandGerundsGame() {
             {currentQ.question}
           </h3>
           <p className="mt-2 text-xs sm:text-sm text-emerald-200/70">
-            ¡Haz clic en la hoja de lirio correcta para que la rana salte!
+             Click the correct lily pad so the frog can jump!
           </p>
         </div>
 
@@ -1024,7 +1005,7 @@ export default function InfinitivesandGerundsGame() {
                       : 'bg-rose-400/20 text-rose-300'
                   }`}
                 >
-                  {frogStatus === 'success' ? '✓ ¡Excelente salto!' : '✗ ¡Se hundió la hoja!'}
+                   {frogStatus === 'success' ? '✓ Excellent jump!' : '✗ The lily pad sank!'}
                 </span>
                 <p className="mt-1 text-xs sm:text-sm text-slate-200 leading-relaxed">
                   {currentQ.explanation}
@@ -1036,7 +1017,7 @@ export default function InfinitivesandGerundsGame() {
                 onClick={handleNextQuestion}
                 className="w-full sm:w-auto shrink-0 rounded-full bg-emerald-400 px-6 py-2.5 text-sm font-extrabold text-emerald-950 shadow-lg shadow-emerald-400/30 transition hover:bg-emerald-300 hover:scale-105 active:scale-95 cursor-pointer"
               >
-                {currentIndex + 1 < questions.length ? 'Siguiente pregunta →' : 'Ver resultados 🏆'}
+                 {currentIndex + 1 < questions.length ? 'Next question →' : 'View results 🏆'}
               </button>
             </div>
           </div>
@@ -1051,7 +1032,7 @@ export default function InfinitivesandGerundsGame() {
               {/* Natural Mossy Rock */}
               <div className="h-7 w-28 sm:w-36 rounded-full bg-gradient-to-r from-emerald-900 via-stone-700 to-emerald-950 border-t-2 border-emerald-600/40 shadow-[0_10px_20px_rgba(0,0,0,0.6)] flex items-center justify-center">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300/60">
-                  Piedra de inicio
+                   Starting rock
                 </span>
               </div>
             </div>
@@ -1063,7 +1044,7 @@ export default function InfinitivesandGerundsGame() {
               {/* Empty Starting Rock when frog is on a leaf */}
               <div className="h-7 w-28 sm:w-36 rounded-full bg-gradient-to-r from-emerald-900 via-stone-700 to-emerald-950 border-t-2 border-emerald-600/40 shadow-inner flex items-center justify-center">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300/40">
-                  {frogStatus === 'sunken' ? '¡La rana reaparecerá aquí!' : 'En el nenúfar'}
+                   {frogStatus === 'sunken' ? 'The frog will reappear here!' : 'On the lily pad'}
                 </span>
               </div>
             </div>
@@ -1074,7 +1055,7 @@ export default function InfinitivesandGerundsGame() {
       {/* 4. Footer with Keyboard navigation instructions */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-5 py-3 text-xs text-slate-500 sm:px-8">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-slate-700">Teclado rápido:</span>
+           <span className="font-semibold text-slate-700">Quick keyboard:</span>
           <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold shadow-xs">
             1
           </kbd>
@@ -1094,15 +1075,15 @@ export default function InfinitivesandGerundsGame() {
           <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold shadow-xs">
             C
           </kbd>
-          <span>para saltar,</span>
+           <span>to jump,</span>
           <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold shadow-xs">
             Enter
           </kbd>
-          <span>para continuar</span>
+           <span>to continue</span>
         </div>
 
         <div className="font-semibold text-emerald-700">
-          Acertar: <span className="text-emerald-800 font-extrabold">+10 pts</span> • Hundirse:{' '}
+           Correct: <span className="text-emerald-800 font-extrabold">+10 pts</span> • Sink:{' '}
           <span className="text-rose-600 font-extrabold">-5 pts</span>
         </div>
       </div>

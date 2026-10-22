@@ -4,18 +4,18 @@ import { ButtonLink } from '@/components/ui/Button';
 
 export default function ChallengesSection() {
   return (
-    <section id="desafios" className="bg-slate-50 px-4 py-16 sm:px-6 lg:py-24">
+    <section id="challenges" className="bg-slate-50 px-4 py-16 sm:px-6 lg:py-24">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-brand-700">
-            Tablero de desafíos
+            Challenge board
           </p>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            Elige un tema y comienza a practicar.
+            Choose a topic and start practicing.
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">
-            Explora los seis temas seleccionados para esta experiencia de Inglés 5. Las actividades
-            se agregarán progresivamente.
+            Explore the six topics selected for this English 5 experience. Activities will be added
+            progressively.
           </p>
         </div>
 
@@ -30,14 +30,14 @@ export default function ChallengesSection() {
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <Badge tone="brand">
-                  {challenge.activity.status === 'available' ? 'Disponible' : 'Próximamente'}
+                  {challenge.activity.status === 'available' ? 'Available' : 'Coming soon'}
                 </Badge>
               </div>
               <h3 className="mt-8 text-xl font-extrabold text-slate-900">{challenge.title}</h3>
               <p className="mt-3 flex-1 leading-7 text-slate-600">{challenge.description}</p>
               {challenge.activity.status === 'available' && (
                 <ButtonLink href={`/desafios/${challenge.id}`} variant="secondary" className="mt-6 w-full">
-                  Abrir desafío
+                  Open challenge
                 </ButtonLink>
               )}
             </article>

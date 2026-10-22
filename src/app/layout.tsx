@@ -8,12 +8,12 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakart
 
 export const metadata: Metadata = {
   title: 'UAO English Interactive Lab',
-  description: 'Desafíos interactivos de Inglés 5 – Universidad Autónoma de Occidente',
+  description: 'Interactive English 5 challenges – Universidad Autónoma de Occidente',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={jakarta.variable}>
+    <html lang="en" className={jakarta.variable}>
       <body className="flex min-h-screen flex-col font-sans">
         <Navbar />
         <main className="flex-1">{children}</main>

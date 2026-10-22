@@ -11,8 +11,8 @@ export default function Navbar() {
           </span>
         </Link>
         <nav className="flex items-center gap-1 text-sm font-semibold text-slate-600">
-          <Link href="/#desafios" className="rounded-lg px-3 py-2 hover:bg-slate-100">Desafíos</Link>
-          <Link href="/#como-funciona" className="rounded-lg px-3 py-2 hover:bg-slate-100">Cómo funciona</Link>
+          <Link href="/#challenges" className="rounded-lg px-3 py-2 hover:bg-slate-100">Challenges</Link>
+          <Link href="/#how-it-works" className="rounded-lg px-3 py-2 hover:bg-slate-100">How it works</Link>
         </nav>
       </div>
     </header>

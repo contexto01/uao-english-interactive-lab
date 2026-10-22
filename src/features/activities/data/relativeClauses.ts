@@ -12,8 +12,8 @@ export const relativeClausesQuestions: RelativeClauseQuestion[] = [
     id: 'rc-woman-doctor',
     sentence: 'The woman who lives next door is a doctor.',
     explanation:
-      "Usamos el pronombre relativo 'who' para referirnos a personas. Esta es una oración relativa explicativa/definitoria (defining relative clause) porque proporciona información indispensable para saber de qué mujer se trata.",
-    rule: "Defining relative clause: 'who' para personas (función de sujeto)",
+      "We use the relative pronoun 'who' for people. This is a defining relative clause because it provides essential information to identify which woman we mean.",
+    rule: "Defining relative clause: 'who' for people (subject function)",
     relativeType: 'defining',
     relativeWord: 'who',
   },
@@ -21,8 +21,8 @@ export const relativeClausesQuestions: RelativeClauseQuestion[] = [
     id: 'rc-book-recommended',
     sentence: 'I found the book that you recommended yesterday.',
     explanation:
-      "Usamos 'that' (o 'which') para hacer referencia a cosas u objetos en oraciones relativas definitorias. 'That' conecta directamente la acción con el libro sin necesidad de comas.",
-    rule: "Defining relative clause: 'that' para cosas u objetos",
+      "We use 'that' (or 'which') to refer to things or objects in defining relative clauses. 'That' directly connects the action to the book without commas.",
+    rule: "Defining relative clause: 'that' for things or objects",
     relativeType: 'defining',
     relativeWord: 'that',
   },
@@ -30,8 +30,8 @@ export const relativeClausesQuestions: RelativeClauseQuestion[] = [
     id: 'rc-brother-london',
     sentence: 'My brother, who works in London, is visiting us.',
     explanation:
-      "Esta es una non-defining relative clause: va encerrada entre comas porque aporta información adicional sobre el hermano (ya sabemos de quién se habla). En este tipo de cláusulas siempre usamos 'who' y nunca 'that'.",
-    rule: "Non-defining relative clause (con comas): 'who' para personas",
+      "This is a non-defining relative clause: it is enclosed by commas because it adds extra information about the brother. In this type of clause, we always use 'who', never 'that'.",
+    rule: "Non-defining relative clause (with commas): 'who' for people",
     relativeType: 'non-defining',
     relativeWord: 'who',
   },
@@ -39,8 +39,8 @@ export const relativeClausesQuestions: RelativeClauseQuestion[] = [
     id: 'rc-cafe-first-met',
     sentence: 'This is the café where we first met.',
     explanation:
-      "Usamos el adverbio relativo 'where' para referirnos a un lugar o establecimiento ('the café') donde ocurrió o se sitúa un acontecimiento.",
-    rule: "Relative adverb: 'where' para lugares",
+      "We use the relative adverb 'where' to refer to a place or establishment ('the café') where an event happened or is located.",
+    rule: "Relative adverb: 'where' for places",
     relativeType: 'defining',
     relativeWord: 'where',
   },
@@ -48,8 +48,8 @@ export const relativeClausesQuestions: RelativeClauseQuestion[] = [
     id: 'rc-students-projects',
     sentence: 'The students whose projects won are celebrating today.',
     explanation:
-      "Usamos el pronombre 'whose' para expresar posesión o pertenencia ('los proyectos de los estudiantes'). 'Whose' va inmediatamente seguido del sustantivo poseído.",
-    rule: "Relative pronoun de posesión: 'whose' + sustantivo",
+      "We use the pronoun 'whose' to express possession or belonging ('the students' projects'). 'Whose' is immediately followed by the possessed noun.",
+    rule: "Possessive relative pronoun: 'whose' + noun",
     relativeType: 'defining',
     relativeWord: 'whose',
   },
@@ -57,8 +57,8 @@ export const relativeClausesQuestions: RelativeClauseQuestion[] = [
     id: 'rc-phone-bought-repair',
     sentence: 'The phone which I bought last month already needs repair.',
     explanation:
-      "Usamos el pronombre relativo 'which' para cosas u objetos. Especifica con precisión a cuál teléfono se hace referencia.",
-    rule: "Defining relative clause: 'which' para cosas u objetos",
+      "We use the relative pronoun 'which' for things or objects. It specifies exactly which phone we mean.",
+    rule: "Defining relative clause: 'which' for things or objects",
     relativeType: 'defining',
     relativeWord: 'which',
   },
@@ -66,8 +66,8 @@ export const relativeClausesQuestions: RelativeClauseQuestion[] = [
     id: 'rc-teacher-languages',
     sentence: 'Our teacher, who speaks three languages, is from Canada.',
     explanation:
-      "Non-defining relative clause con comas: la información de que habla tres idiomas es un dato complementario e interesante, no define la identidad básica de la docente.",
-    rule: "Non-defining relative clause (con comas): 'who' para información extra",
+      "Non-defining relative clause with commas: the information that she speaks three languages is extra, interesting information and does not define the teacher's basic identity.",
+    rule: "Non-defining relative clause (with commas): 'who' for extra information",
     relativeType: 'non-defining',
     relativeWord: 'who',
   },
@@ -75,14 +75,14 @@ export const relativeClausesQuestions: RelativeClauseQuestion[] = [
     id: 'rc-park-children-play',
     sentence: 'That is the park where the children play after school.',
     explanation:
-      "Usamos 'where' para señalar el parque como la ubicación espacial donde los niños juegan habitualmente después de clase.",
-    rule: "Relative adverb: 'where' para lugares",
+      "We use 'where' to identify the park as the place where the children usually play after school.",
+    rule: "Relative adverb: 'where' for places",
     relativeType: 'defining',
     relativeWord: 'where',
   },
 ];
 
 export function tokenizeSentence(sentence: string) {
-  // Soporta caracteres acentuados (como en 'café'), apóstrofes y signos de puntuación
+  // Supports accented characters (such as in 'café'), apostrophes, and punctuation
   return sentence.match(/[\p{L}]+(?:'[\p{L}]+)?|[,.!?]/gu) ?? [];
 }

@@ -9,7 +9,6 @@ import {
   shuffleArray,
 } from './data/causeReasonPurpose';
 
-const STORAGE_KEY = 'uao-english-lab:progress:cause-reason-purpose';
 const CORRECT_POINTS = 10;
 const MISTAKE_PENALTY = 5;
 
@@ -229,28 +228,10 @@ export default function CauseReasonandPurposeGame() {
   const [isMuted, setIsMuted] = useState(false);
   const [isInputLocked, setIsInputLocked] = useState(false);
 
-  // Load preferences & shuffle right column on client mount
+  // Shuffle right column on client mount
   useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (typeof parsed.bestScore === 'number') {
-          setBestScore(parsed.bestScore);
-        }
-      }
-      const soundPref = window.localStorage.getItem('uao-english-lab:sound-enabled');
-      if (soundPref === 'false') {
-        setIsMuted(true);
-        sfx.enabled = false;
-      }
-    } catch {
-      // Ignore
-    } finally {
-      // Shuffle right column on client mount to avoid prerender Math.random
-      setRightColumnItems(shuffleArray(causeReasonPurposePairs));
-      setIsHydrated(true);
-    }
+    setRightColumnItems(shuffleArray(causeReasonPurposePairs));
+    setIsHydrated(true);
   }, []);
 
   // Timer
@@ -267,13 +248,7 @@ export default function CauseReasonandPurposeGame() {
   // High score tracking
   useEffect(() => {
     if (!isCompleted || !isHydrated) return;
-    try {
-      const newBest = Math.max(bestScore, score);
-      setBestScore(newBest);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ bestScore: newBest }));
-    } catch {
-      // Ignore
-    }
+    setBestScore((currentBest) => Math.max(currentBest, score));
   }, [isCompleted, isHydrated, score, bestScore]);
 
   // Audio toggle
@@ -281,11 +256,6 @@ export default function CauseReasonandPurposeGame() {
     const nextState = !isMuted;
     setIsMuted(nextState);
     sfx.enabled = !nextState;
-    try {
-      window.localStorage.setItem('uao-english-lab:sound-enabled', String(!nextState));
-    } catch {
-      // Ignore
-    }
   };
 
   /**
@@ -419,22 +389,9 @@ export default function CauseReasonandPurposeGame() {
     <div className="w-full">
       {/* Top Header & Navigation Bar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2 text-sm font-bold text-slate-700 shadow-xs ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:text-brand-700"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Challenges
+        <Link href="/" className="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2 text-sm font-bold text-slate-700 shadow-xs ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:text-brand-700">
+          ← Challenges
         </Link>
-
         {/* Live Status Indicators */}
         <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           {/* Sound Toggle */}

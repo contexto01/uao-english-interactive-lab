@@ -1,31 +1,31 @@
 const steps = [
   {
     number: '01',
-    title: 'Elige un desafío',
-    description: 'Selecciona el tema de Inglés 5 que quieres repasar.',
+    title: 'Choose a challenge',
+    description: 'Select the English 5 topic you want to review.',
   },
   {
     number: '02',
-    title: 'Completa la actividad',
-    description: 'Practica con una actividad interactiva diseñada para el tema.',
+    title: 'Complete the activity',
+    description: 'Practice with an interactive activity designed for the topic.',
   },
   {
     number: '03',
-    title: 'Revisa tu progreso',
-    description: 'Consulta tu puntaje y tiempo cuando esté disponible la experiencia de resultados.',
+    title: 'Review your progress',
+    description: 'Check your score and time when the results experience becomes available.',
   },
 ];
 
 export default function HowItWorks() {
   return (
-    <section id="como-funciona" className="bg-white px-4 py-16 sm:px-6 lg:py-24">
+    <section id="how-it-works" className="bg-white px-4 py-16 sm:px-6 lg:py-24">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-brand-700">
-            Así funciona
+            How it works
           </p>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            Un camino claro para practicar.
+            A clear path to practice.
           </h2>
         </div>
 
