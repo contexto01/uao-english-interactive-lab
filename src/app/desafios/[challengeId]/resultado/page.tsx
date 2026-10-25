@@ -1,9 +1,27 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { challenges, getChallengeById } from '@/features/challenges/data/challenges';
+import { createPageMetadata } from '@/lib/seo';
 
 export function generateStaticParams() {
   return challenges.map((challenge) => ({ challengeId: challenge.id }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ challengeId: string }>;
+}): Promise<Metadata> {
+  const { challengeId } = await params;
+  const challenge = getChallengeById(challengeId);
+
+  return createPageMetadata({
+    title: challenge ? `${challenge.title} results` : 'Challenge results',
+    description: 'Challenge results are not available yet.',
+    path: `/desafios/${challengeId}/resultado`,
+    noIndex: true,
+  });
 }
 
 export default async function ChallengeResultPage({

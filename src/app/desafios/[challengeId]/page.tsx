@@ -1,12 +1,38 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { challenges, getChallengeById } from '@/features/challenges/data/challenges';
 import EmbeddedActivity from '@/features/activities/EmbeddedActivity';
 import InternalActivity from '@/features/activities/InternalActivity';
+import { createPageMetadata } from '@/lib/seo';
 
 // Generate routes for the six challenges at build time (also supports static export).
 export function generateStaticParams() {
   return challenges.map((c) => ({ challengeId: c.id }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ challengeId: string }>;
+}): Promise<Metadata> {
+  const { challengeId } = await params;
+  const challenge = getChallengeById(challengeId);
+
+  if (!challenge) {
+    return createPageMetadata({
+      title: 'Challenge not found',
+      description: 'This English challenge could not be found.',
+      path: `/desafios/${challengeId}`,
+      noIndex: true,
+    });
+  }
+
+  return createPageMetadata({
+    title: challenge.title,
+    description: challenge.description,
+    path: `/desafios/${challenge.id}`,
+  });
 }
 
 async function ChallengeContent({

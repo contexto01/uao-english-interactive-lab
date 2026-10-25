@@ -3,13 +3,18 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { GameAudioProvider } from '../features/activities/context/GameAudioProvider';
+import { createPageMetadata, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/seo';
 import './globals.css';
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta' });
 
 export const metadata: Metadata = {
-  title: 'UAO English Interactive Lab',
-  description: 'Interactive English 5 challenges – Universidad Autónoma de Occidente',
+  metadataBase: new URL(SITE_URL),
+  ...createPageMetadata({
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    path: '/',
+  }),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
