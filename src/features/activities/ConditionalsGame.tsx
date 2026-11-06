@@ -459,6 +459,7 @@ export default function ConditionalsGame() {
 
       {progress.completed && (
         <GameSummary
+          challengeId="conditionals"
           title="Activity completed!"
           description="You correctly organized all the Conditionals sentences."
           score={progress.score}

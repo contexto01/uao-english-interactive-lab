@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { formatTime } from '../utils/gameUtils';
+import { useProgress } from '@/features/progress/ProgressProvider';
 
 type GameSummaryProps = {
+  challengeId: string;
   title: string;
   description?: string;
   score: number;
@@ -19,6 +21,7 @@ type GameSummaryProps = {
 };
 
 export default function GameSummary({
+  challengeId,
   title,
   description,
   score,
@@ -31,6 +34,24 @@ export default function GameSummary({
   onRestart,
   restartLabel = 'Try challenge again',
 }: GameSummaryProps) {
+  const { user, isLoading, records, completeChallenge } = useProgress();
+  const [saveState, setSaveState] = useState<'waiting' | 'saving' | 'local' | 'saved' | 'error'>('waiting');
+  const savedAttempt = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const attempt = `${challengeId}:${score}`;
+    if (savedAttempt.current === attempt) return;
+    savedAttempt.current = attempt;
+    setSaveState('saving');
+
+    void completeChallenge(challengeId, score)
+      .then((success) => setSaveState(success ? (user ? 'saved' : 'local') : 'error'))
+      .catch(() => setSaveState('error'));
+  }, [challengeId, completeChallenge, isLoading, score, user]);
+
+  const effectiveBestScore = Math.max(bestScore ?? 0, records[challengeId]?.bestScore ?? 0);
   const stats = [
     { label: 'Final score', value: `${score} pts`, tone: 'emerald' },
     ...(accuracy !== undefined
@@ -43,8 +64,8 @@ export default function GameSummary({
       ? [{ label: 'Max combo', value: `x${maxCombo}`, tone: 'amber' as const }]
       : []),
     { label: 'Total time', value: formatTime(time), tone: 'slate' },
-    ...(bestScore !== undefined
-      ? [{ label: 'Best score', value: `${bestScore} pts`, tone: 'blue' as const }]
+    ...(bestScore !== undefined || records[challengeId]
+      ? [{ label: 'Best score', value: `${effectiveBestScore} pts`, tone: 'blue' as const }]
       : []),
   ];
 
@@ -88,6 +109,24 @@ export default function GameSummary({
         </div>
 
         {children && <div className="mt-8 text-left">{children}</div>}
+
+        <div className="mt-6 rounded-2xl bg-slate-50 p-4 text-left">
+          {saveState === 'saving' && <p className="text-sm font-semibold text-slate-600">Saving your progress…</p>}
+          {saveState === 'saved' && <p className="text-sm font-bold text-emerald-700">Your completion and best score are saved to your account.</p>}
+          {saveState === 'local' && (
+            <>
+              <p className="text-sm font-bold text-slate-700">Progress saved in this browser.</p>
+              <Link href="/login?next=%2Fprogreso" className="mt-2 inline-flex text-sm font-extrabold text-brand-700 hover:underline">
+                Sign in with your UAO Google account to keep it →
+              </Link>
+            </>
+          )}
+          {saveState === 'error' && (
+            <p role="alert" className="text-sm font-semibold text-rose-700">
+              Progress could not be saved to your account. Please check the Supabase setup and try again.
+            </p>
+          )}
+        </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <button

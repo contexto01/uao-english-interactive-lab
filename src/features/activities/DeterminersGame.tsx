@@ -359,6 +359,7 @@ export default function DeterminersGame() {
         </div>
       ) : (
         <GameSummary
+          challengeId="determiners"
           title="Great job with Determiners!"
           description="You have completed all 10 True or False statements on articles, demonstratives, possessives, and quantifiers."
           score={score}

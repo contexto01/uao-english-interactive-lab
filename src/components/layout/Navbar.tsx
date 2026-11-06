@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AuthStatus from "@/features/auth/AuthStatus";
 
 export default function Navbar() {
   return (
@@ -13,6 +14,7 @@ export default function Navbar() {
         <nav className="flex items-center gap-1 text-sm font-semibold text-slate-600">
           <Link href="/#challenges" className="rounded-lg px-3 py-2 hover:bg-slate-100">Challenges</Link>
           <Link href="/#how-it-works" className="rounded-lg px-3 py-2 hover:bg-slate-100">How it works</Link>
+          <AuthStatus />
         </nav>
       </div>
     </header>

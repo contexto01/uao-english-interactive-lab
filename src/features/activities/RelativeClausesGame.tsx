@@ -447,6 +447,7 @@ export default function RelativeClausesGame() {
 
       {progress.completed && (
         <GameSummary
+          challengeId="relative-clauses"
           title="Activity completed!"
           description="You correctly organized all the Relative Clauses sentences."
           score={progress.score}

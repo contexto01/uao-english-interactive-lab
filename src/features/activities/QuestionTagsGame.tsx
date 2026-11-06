@@ -507,6 +507,7 @@ export default function QuestionTagsGame() {
         </div>
       ) : (
         <GameSummary
+          challengeId="question-tags"
           title="Great job with Question Tags!"
           description="You have successfully mastered all 10 essential question tags concepts."
           score={score}

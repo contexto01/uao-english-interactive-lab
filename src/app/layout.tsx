@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { GameAudioProvider } from '../features/activities/context/GameAudioProvider';
+import { ProgressProvider } from '@/features/progress/ProgressProvider';
 import { createPageMetadata, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/seo';
 import './globals.css';
 
@@ -21,11 +22,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={jakarta.variable}>
       <body className="flex min-h-screen flex-col font-sans">
-        <GameAudioProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </GameAudioProvider>
+        <ProgressProvider>
+          <GameAudioProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </GameAudioProvider>
+        </ProgressProvider>
       </body>
     </html>
   );

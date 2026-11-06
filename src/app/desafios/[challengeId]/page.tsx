@@ -5,6 +5,7 @@ import { challenges, getChallengeById } from '@/features/challenges/data/challen
 import EmbeddedActivity from '@/features/activities/EmbeddedActivity';
 import InternalActivity from '@/features/activities/InternalActivity';
 import { createPageMetadata } from '@/lib/seo';
+import ChallengeAccessGate from '@/features/challenges/ChallengeAccessGate';
 
 // Generate routes for the six challenges at build time (also supports static export).
 export function generateStaticParams() {
@@ -50,15 +51,17 @@ async function ChallengeContent({
       <p className="mt-2 text-slate-600">{challenge.description}</p>
 
       <div className="mt-8">
-        {challenge.activity.kind === 'embedded' && challenge.activity.status === 'available' ? (
-          <EmbeddedActivity src={challenge.activity.src} title={challenge.activity.title} />
-        ) : challenge.activity.kind === 'internal' && challenge.activity.status === 'available' ? (
-          <InternalActivity gameId={challenge.activity.gameId} />
-        ) : (
-          <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
-             This activity will be available soon.
-          </div>
-        )}
+        <ChallengeAccessGate challengeId={challenge.id}>
+          {challenge.activity.kind === 'embedded' && challenge.activity.status === 'available' ? (
+            <EmbeddedActivity src={challenge.activity.src} title={challenge.activity.title} />
+          ) : challenge.activity.kind === 'internal' && challenge.activity.status === 'available' ? (
+            <InternalActivity gameId={challenge.activity.gameId} />
+          ) : (
+            <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+               This activity will be available soon.
+            </div>
+          )}
+        </ChallengeAccessGate>
       </div>
     </>
   );

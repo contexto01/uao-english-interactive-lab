@@ -658,6 +658,7 @@ export default function InfinitivesandGerundsGame() {
         </section>
       ) : (
         <GameSummary
+          challengeId="infinitives-gerunds"
           title="Infinitives & Gerunds Master"
           description="The frog crossed the pond and mastered every grammar question!"
           score={score}

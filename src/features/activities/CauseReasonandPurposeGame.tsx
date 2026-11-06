@@ -406,6 +406,7 @@ export default function CauseReasonandPurposeGame() {
         </div>
       ) : (
         <GameSummary
+          challengeId="connectors-cause-reason-purpose"
           title="Great job with Cause, Reason and Purpose!"
           description="You have successfully connected all 8 clauses using the correct connectors."
           score={score}
