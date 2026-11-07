@@ -1,7 +1,20 @@
+'use client';
+
 import { Badge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/Button';
+import { challenges } from '@/features/challenges/data/challenges';
+import { useProgress } from '@/features/progress/ProgressProvider';
 
 export default function Hero() {
+  const { isLoading, isUnlocked, records } = useProgress();
+  const nextChallengeIndex = challenges.findIndex(
+    (challenge) =>
+      challenge.activity.status === 'available' &&
+      !records[challenge.id]?.completed &&
+      isUnlocked(challenge.id),
+  );
+  const nextChallenge = nextChallengeIndex >= 0 ? challenges[nextChallengeIndex] : null;
+
   return (
     <section className="relative overflow-hidden border-b border-brand-100 bg-white">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-24">
@@ -37,13 +50,17 @@ export default function Hero() {
           <div className="relative rounded-[2rem] bg-brand-700 p-6 text-white shadow-xl shadow-brand-700/20 sm:p-8">
             <div className="flex items-center justify-between text-sm font-bold text-brand-100">
               <span>YOUR LEARNING PATH</span>
-              <span>01 / 06</span>
+              <span>{nextChallenge ? `${String(nextChallengeIndex + 1).padStart(2, '0')} / 06` : '06 / 06'}</span>
             </div>
             <div className="mt-10 rounded-3xl bg-white p-6 text-slate-900">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-bold text-brand-700">Challenge 01</p>
-                  <h2 className="mt-2 text-2xl font-extrabold">Conditionals</h2>
+                  <p className="text-sm font-bold text-brand-700">
+                    {nextChallenge ? `Challenge ${String(nextChallengeIndex + 1).padStart(2, '0')}` : 'Learning path'}
+                  </p>
+                  <h2 className="mt-2 text-2xl font-extrabold">
+                    {nextChallenge?.title ?? 'All challenges complete'}
+                  </h2>
                 </div>
                 <span className="rounded-2xl bg-brand-50 px-3 py-2 text-2xl" aria-hidden="true">
                   ?
@@ -55,8 +72,17 @@ export default function Hero() {
                 <div className="h-3 w-3/5 rounded-full bg-brand-100" />
               </div>
               <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-5 text-sm font-bold text-slate-500">
-                <span>Interactive activity</span>
-                <span className="text-brand-700">Coming soon</span>
+                <span>{isLoading ? 'Loading activity' : 'Next activity'}</span>
+                {nextChallenge ? (
+                  <ButtonLink
+                    href={`/desafios/${nextChallenge.id}`}
+                    className="px-3 py-2 text-xs"
+                  >
+                    Open challenge
+                  </ButtonLink>
+                ) : (
+                  <span className="text-brand-700">Completed</span>
+                )}
               </div>
             </div>
           </div>
