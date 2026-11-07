@@ -37,7 +37,7 @@ export default function Navbar() {
         </button>
         <nav
           id="site-navigation"
-          className={`${isMenuOpen ? 'flex' : 'hidden'} basis-full flex-col gap-1 border-t border-slate-100 pt-3 text-sm font-semibold text-slate-600 sm:flex sm:basis-auto sm:flex-row sm:items-center sm:justify-end sm:gap-1 sm:border-0 sm:pt-0`}
+          className={`${isMenuOpen ? 'flex' : 'hidden'} absolute left-0 right-0 top-full z-20 flex-col gap-1 border-b border-slate-200 bg-white p-4 text-sm font-semibold text-slate-600 shadow-lg sm:static sm:flex sm:basis-auto sm:flex-row sm:items-center sm:justify-end sm:gap-1 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none`}
         >
           <Link href="/#challenges" onClick={() => setIsMenuOpen(false)} className="w-full rounded-lg px-3 py-2 hover:bg-slate-100 sm:w-auto">Challenges</Link>
           <Link href="/#how-it-works" onClick={() => setIsMenuOpen(false)} className="w-full rounded-lg px-3 py-2 hover:bg-slate-100 sm:w-auto">How it works</Link>
