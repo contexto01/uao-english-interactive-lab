@@ -16,7 +16,7 @@ export default function AuthStatus() {
     return (
       <Link
         href="/login"
-        className="rounded-lg bg-brand-700 px-3 py-2 text-sm font-bold text-white transition hover:bg-brand-800"
+        className="w-full rounded-lg bg-brand-700 px-3 py-2 text-left text-sm font-bold text-white transition hover:bg-brand-800 sm:w-auto sm:text-center"
       >
         Sign in
       </Link>
@@ -29,19 +29,19 @@ export default function AuthStatus() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Link href="/progreso" className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">
+    <div className="contents sm:flex sm:items-center sm:gap-2">
+      <Link href="/progreso" className="w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-slate-600 hover:bg-slate-100 sm:w-auto sm:text-center">
         My progress
       </Link>
       {role === 'admin' && (
-        <Link href="/admin" className="rounded-lg px-3 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50">
+        <Link href="/admin" className="w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-brand-700 hover:bg-brand-50 sm:w-auto sm:text-center">
           Admin
         </Link>
       )}
       <button
         type="button"
         onClick={signOut}
-        className="rounded-lg px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100"
+        className="w-full rounded-lg px-3 py-2 text-left text-sm font-bold text-slate-600 hover:bg-slate-100 sm:w-auto sm:text-center"
       >
         Sign out
       </button>
