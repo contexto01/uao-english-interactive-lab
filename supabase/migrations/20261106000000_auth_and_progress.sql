@@ -57,7 +57,7 @@ begin
     new.id,
     lower(new.email),
     coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name'),
-    case when lower(new.email) = 'daniel_ste.barrera@uao.edu.co' then 'admin' else 'student' end
+    case when lower(new.email) in ('daniel_ste.barrera@uao.edu.co', 'markus.salazar@uao.edu.co') then 'admin' else 'student' end
   )
   on conflict (id) do update
     set email = excluded.email,
@@ -78,7 +78,7 @@ select
   users.id,
   lower(users.email),
   coalesce(users.raw_user_meta_data ->> 'full_name', users.raw_user_meta_data ->> 'name'),
-  case when lower(users.email) = 'daniel_ste.barrera@uao.edu.co' then 'admin' else 'student' end
+  case when lower(users.email) in ('daniel_ste.barrera@uao.edu.co', 'markus.salazar@uao.edu.co') then 'admin' else 'student' end
 from auth.users as users
 where users.email is not null
 on conflict (id) do update
