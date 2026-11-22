@@ -14,6 +14,8 @@ import { challenges } from '@/features/challenges/data/challenges';
 import { createClient } from '@/lib/supabase/client';
 
 const STORAGE_KEY = 'uao-english-progress-v1';
+// Temporary preview mode; keep disabled for sequential challenge unlocking.
+const PREVIEW_UNLOCK_ALL_CHALLENGES = false;
 
 export type ProgressRecord = {
   challengeId: string;
@@ -246,6 +248,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const isUnlocked = useCallback((challengeId: string) => {
     const index = challenges.findIndex((challenge) => challenge.id === challengeId);
     if (index < 0 || challenges[index].activity.status !== 'available') return false;
+    if (PREVIEW_UNLOCK_ALL_CHALLENGES) return true;
     return index === 0 || records[challenges[index - 1].id]?.completed === true;
   }, [records]);
 

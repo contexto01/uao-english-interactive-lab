@@ -35,7 +35,7 @@ export const causeReasonPurposePairs: MatchingPair[] = [
   {
     id: 4,
     leftText: 'We wear jackets',
-    rightText: 'because it was cold',
+    rightText: 'because it is cold',
     connector: 'because',
     category: 'Cause & Reason',
     explanation: 'Explains the reason for wearing jackets.',
