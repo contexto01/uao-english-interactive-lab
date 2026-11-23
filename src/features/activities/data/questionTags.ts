@@ -1,96 +1,132 @@
-export type QuestionTagItem = {
-  id: string;
-  word: string;
-  clue: string;
-  example: string;
-  tip?: string;
+export type QuestionTagOption = {
+  letter: 'A' | 'B' | 'C' | 'D';
+  text: string;
+  isCorrect: boolean;
 };
 
-export const questionTagsQuestions: QuestionTagItem[] = [
+export type QuestionTagQuestion = {
+  id: number;
+  prompt: string;
+  statementPart: string;
+  answer: string;
+  category: string;
+  explanation: string;
+  options: QuestionTagOption[];
+};
+
+type RawQuestionTag = {
+  id: number;
+  prompt: string;
+  statementPart: string;
+  answer: string;
+  distractors: [string, string, string];
+  category: string;
+  explanation: string;
+};
+
+export const rawQuestionTagsQuestions: RawQuestionTag[] = [
   {
-    id: 'qt-1',
-    word: 'TAG',
-    clue: 'Short question added after a statement to check or confirm information.',
-    example: "Example: \"It's a beautiful day, isn't it?\" ('isn't it' is the tag)",
-    tip: 'Tags turn statements into quick checks for agreement.',
+    id: 1,
+    prompt: 'You are from London, ___?',
+    statementPart: 'You are from London,',
+    answer: "aren't you",
+    distractors: ['are you', "don't you", "weren't you"],
+    category: 'Verb Be (Affirmative → Negative)',
+    explanation:
+      "The statement is affirmative and uses be (are), so the tag is negative: aren't you.",
   },
   {
-    id: 'qt-2',
-    word: 'AUXILIARY',
-    clue: 'Helping verb used to form a question or negative sentence.',
-    example: "Example: \"You can drive, can't you?\" ('can' is the auxiliary verb)",
-    tip: 'The question tag repeats or mirrors the auxiliary verb from the main clause.',
+    id: 2,
+    prompt: "She isn't coming today, ___?",
+    statementPart: "She isn't coming today,",
+    answer: 'is she',
+    distractors: ["isn't she", 'does she', 'was she'],
+    category: 'Present Continuous (Negative → Affirmative)',
+    explanation:
+      'A negative statement takes an affirmative tag. The auxiliary is is, so use is she.',
   },
   {
-    id: 'qt-3',
-    word: 'SUBJECT',
-    clue: 'Person, animal, or thing that performs the action or is described.',
-    example: "Example: \"The students studied hard, didn't they?\" ('they' refers to the subject)",
-    tip: 'The subject in the tag is converted into an equivalent personal pronoun.',
+    id: 3,
+    prompt: 'They live near the station, ___?',
+    statementPart: 'They live near the station,',
+    answer: "don't they",
+    distractors: ['do they', "aren't they", "didn't they"],
+    category: 'Present Simple (do)',
+    explanation:
+      'In the present simple, use do in the tag when the main verb is live. The statement is positive, so the tag is negative.',
   },
   {
-    id: 'qt-4',
-    word: 'NEGATIVE',
-    clue: 'Form of a sentence that says something is not true or does not happen.',
-    example: "Example: \"You like pizza, don't you?\" (Positive statement + Negative tag)",
-    tip: 'A positive statement takes a negative question tag.',
+    id: 4,
+    prompt: 'Mark plays the guitar, ___?',
+    statementPart: 'Mark plays the guitar,',
+    answer: "doesn't he",
+    distractors: ["don't he", 'does he', "isn't he"],
+    category: 'Present Simple 3rd Person (does)',
+    explanation:
+      'With he and a present-simple verb, use does. A positive statement takes a negative tag.',
   },
   {
-    id: 'qt-5',
-    word: 'POSITIVE',
-    clue: 'Form of a sentence that states something is true or happens.',
-    example: "Example: \"She hasn't called, has she?\" (Negative statement + Positive tag)",
-    tip: 'A negative statement takes a positive question tag.',
+    id: 5,
+    prompt: 'We went to the museum, ___?',
+    statementPart: 'We went to the museum,',
+    answer: "didn't we",
+    distractors: ["don't we", 'did we', "weren't we"],
+    category: 'Past Simple (Affirmative → Negative)',
+    explanation:
+      'The past-simple statement uses did in its tag. Because the statement is affirmative, the tag is negative.',
   },
   {
-    id: 'qt-6',
-    word: 'INTONATION',
-    clue: 'The rise and fall of voice pitch when speaking, used in tags to check or ask.',
-    example: 'Example: Rising pitch (↗) means a genuine question; falling pitch (↘) checks agreement.',
-    tip: 'Intonation changes the speaker’s intention completely.',
+    id: 6,
+    prompt: "You didn't call me, ___?",
+    statementPart: "You didn't call me,",
+    answer: 'did you',
+    distractors: ["didn't you", 'do you', 'have you'],
+    category: 'Past Simple (Negative → Affirmative)',
+    explanation:
+      'The statement is negative and in the past simple, so its tag is affirmative: did you.',
   },
   {
-    id: 'qt-7',
-    word: 'PRONOUN',
-    clue: 'Word used instead of a noun, such as he, she, or they.',
-    example: "Example: \"Carlos lives in Cali, doesn't he?\" ('he' is the pronoun replacing Carlos)",
-    tip: 'Never use full nouns in a tag; always use pronouns (I, you, he, she, it, we, they).',
+    id: 7,
+    prompt: 'Tom can swim very well, ___?',
+    statementPart: 'Tom can swim very well,',
+    answer: "can't he",
+    distractors: ['can he', "doesn't he", "isn't he"],
+    category: 'Modal Verbs (can)',
+    explanation:
+      "Repeat the modal can in the tag and change its polarity: the affirmative statement takes can't he.",
   },
   {
-    id: 'qt-8',
-    word: 'CONTRACTION',
-    clue: 'Shortened form made by joining words, often with an apostrophe.',
-    example: "Example: \"aren't\", \"isn't\", \"doesn't\", \"won't\"",
-    tip: 'Negative tags almost always use contracted forms instead of full words.',
+    id: 8,
+    prompt: "I shouldn't be late, ___?",
+    statementPart: "I shouldn't be late,",
+    answer: 'should I',
+    distractors: ["shouldn't I", 'do I', 'am I'],
+    category: 'Modal Verbs (should)',
+    explanation:
+      'The negative modal statement takes an affirmative tag, using the same modal: should I.',
   },
   {
-    id: 'qt-9',
-    word: 'CONFIRM',
-    clue: 'To check that something is true or correct.',
-    example: 'Example: We use question tags primarily to confirm facts or invite conversation.',
-    tip: 'Question tags are conversational devices rather than formal interrogatives.',
+    id: 9,
+    prompt: 'Your parents have finished dinner, ___?',
+    statementPart: 'Your parents have finished dinner,',
+    answer: "haven't they",
+    distractors: ["don't they", 'have they', "hadn't they"],
+    category: 'Present Perfect (have)',
+    explanation:
+      "Here have is the auxiliary in the present perfect. The affirmative statement takes the negative tag haven't they.",
   },
   {
-    id: 'qt-10',
-    word: 'STATEMENT',
-    clue: 'A sentence that gives information rather than asking a question.',
-    example: "Example: \"You are Colombian [Statement], aren't you? [Question Tag]\"",
-    tip: 'Every question tag relies on an initial declarative statement.',
+    id: 10,
+    prompt: 'The children are playing outside, ___?',
+    statementPart: 'The children are playing outside,',
+    answer: "aren't they",
+    distractors: ['are they', "don't they", "isn't it"],
+    category: 'Present Continuous (are)',
+    explanation:
+      "The present continuous uses are as its auxiliary. A positive statement takes the negative tag aren't they.",
   },
 ];
 
-/**
- * Letter tile representation for scrambled pool
- */
-export type LetterTile = {
-  id: string;
-  char: string;
-  originalIndex: number;
-};
-
-/**
- * Shuffles an array with Fisher-Yates algorithm
- */
 export function shuffleArray<T>(items: T[]): T[] {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
@@ -100,48 +136,49 @@ export function shuffleArray<T>(items: T[]): T[] {
   return result;
 }
 
-/**
- * Creates initial deterministic tiles for SSR/prerender without Math.random()
- */
-export function createInitialTiles(word: string): LetterTile[] {
-  const letters = word.toUpperCase().split('');
-  const tiles: LetterTile[] = letters.map((char, index) => ({
-    id: `${char}-${index}`,
-    char,
-    originalIndex: index,
-  }));
+const OPTION_LETTERS: ('A' | 'B' | 'C' | 'D')[] = ['A', 'B', 'C', 'D'];
 
-  if (tiles.length > 1) {
-    [tiles[0], tiles[1]] = [tiles[1], tiles[0]];
-  }
-  return tiles;
+export function createInitialQuestionTagsQuiz(): QuestionTagQuestion[] {
+  return rawQuestionTagsQuestions.map((q) => {
+    const rawOptions = [
+      { text: q.answer, isCorrect: true },
+      ...q.distractors.map((d) => ({ text: d, isCorrect: false })),
+    ];
+    return {
+      id: q.id,
+      prompt: q.prompt,
+      statementPart: q.statementPart,
+      answer: q.answer,
+      category: q.category,
+      explanation: q.explanation,
+      options: rawOptions.map((opt, idx) => ({
+        letter: OPTION_LETTERS[idx],
+        text: opt.text,
+        isCorrect: opt.isCorrect,
+      })),
+    };
+  });
 }
 
-let tileIdCounter = 0;
-
-/**
- * Creates scrambled tiles for a word, ensuring it's not already spelled correctly
- */
-export function createScrambledTiles(word: string): LetterTile[] {
-  const letters = word.toUpperCase().split('');
-  const tiles: LetterTile[] = letters.map((char, index) => ({
-    id: `${char}-${index}-${++tileIdCounter}`,
-    char,
-    originalIndex: index,
-  }));
-
-  // If word length is 1, return as is
-  if (tiles.length <= 1) return tiles;
-
-  for (let attempt = 0; attempt < 50; attempt++) {
-    const shuffled = shuffleArray(tiles);
-    const spelled = shuffled.map((t) => t.char).join('');
-    if (spelled !== word.toUpperCase()) {
-      return shuffled;
-    }
-  }
-
-  // Fallback: reverse the tiles if shuffle was identical
-  return [...tiles].reverse();
+export function generateRandomizedQuestionTagsQuiz(): QuestionTagQuestion[] {
+  const shuffledQuestions = shuffleArray(rawQuestionTagsQuestions);
+  return shuffledQuestions.map((q) => {
+    const rawOptions = shuffleArray([
+      { text: q.answer, isCorrect: true },
+      ...q.distractors.map((d) => ({ text: d, isCorrect: false })),
+    ]);
+    return {
+      id: q.id,
+      prompt: q.prompt,
+      statementPart: q.statementPart,
+      answer: q.answer,
+      category: q.category,
+      explanation: q.explanation,
+      options: rawOptions.map((opt, idx) => ({
+        letter: OPTION_LETTERS[idx],
+        text: opt.text,
+        isCorrect: opt.isCorrect,
+      })),
+    };
+  });
 }
-

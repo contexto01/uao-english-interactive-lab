@@ -54,3 +54,38 @@
     transform: translateY(0) scale(1);
   }
 }
+
+@keyframes space-scroll-slow {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: 0px 480px;
+  }
+}
+
+@keyframes space-scroll-fast {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: 0px 720px;
+  }
+}
+
+@keyframes warp-streak {
+  0% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(520%);
+    opacity: 0;
+  }
+}
