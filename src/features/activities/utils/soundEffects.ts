@@ -152,6 +152,76 @@ export class SoundEffects {
     this.tone(ctx, { type: 'sine', from: 180, to: 540, duration: 0.22, volume: 0.25 });
   }
 
+  laser() {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    this.tone(ctx, { type: 'sawtooth', from: 920, to: 180, duration: 0.16, volume: 0.18 });
+  }
+
+  explosion() {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    this.tone(ctx, { type: 'triangle', from: 150, to: 42, duration: 0.35, volume: 0.32 });
+
+    try {
+      const now = ctx.currentTime;
+      const bufferSize = ctx.sampleRate * 0.28;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(620, now);
+
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.24, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.005, now + 0.28);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.28);
+    } catch {
+      // Ignore audio buffer issues if unsupported
+    }
+  }
+
+  powerup() {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, idx) => {
+      this.tone(ctx, {
+        type: 'sine',
+        from: freq,
+        start: idx * 0.055,
+        duration: 0.16,
+        volume: 0.22,
+      });
+    });
+  }
+
+  gameOver() {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    const notes = [392, 349.23, 329.63, 261.63];
+    notes.forEach((freq, idx) => {
+      this.tone(ctx, {
+        type: 'sawtooth',
+        from: freq,
+        to: freq * 0.92,
+        start: idx * 0.14,
+        duration: 0.24,
+        volume: 0.2,
+      });
+    });
+  }
+
   splash() {
     const ctx = this.getContext();
     if (!ctx) return;

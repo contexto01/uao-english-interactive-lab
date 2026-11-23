@@ -14,7 +14,7 @@ import { challenges } from '@/features/challenges/data/challenges';
 import { createClient } from '@/lib/supabase/client';
 
 const STORAGE_KEY = 'uao-english-progress-v1';
-// Temporary preview mode; keep disabled for sequential challenge unlocking.
+// Preview mode enabled so all challenges can be tested freely without completing previous ones.
 const PREVIEW_UNLOCK_ALL_CHALLENGES = false;
 
 export type ProgressRecord = {
